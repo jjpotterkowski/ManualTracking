@@ -98,8 +98,8 @@ pyjmi, Pygame, and matplotlib.
 </html>"));
     end PythonFunctions;
     class ModelicaLicense2 "Modelica License 2"
-      extends Modelica.Icons.Information;        
-      annotation (Documentation(info="<html>
+      extends Modelica.Icons.Information;
+      annotation(Documentation(info = "<html>
 <head>
 	<title>The Modelica License 2</title>
 <style type=\"text/css\">
@@ -789,7 +789,6 @@ and Mathematics</a> (ERCIM)</li></ul>
     model TaskSettings
       extends ManualTracking.Icons.TaskSettings;
       parameter Modelica.SIunits.Time taskDuration = 120 "Duration of tracking task";
-      parameter Real framesPerSec = 50 "Frame rate for simulations";
       parameter Modelica.SIunits.Time previewTime = 0 "Time in advance to show target motion (for user experiment)";
       parameter Integer backgroundVisible = 0 "Show background hatch marks if 1, do not show if 0 (for user experiment)";
     end TaskSettings;
@@ -830,7 +829,7 @@ and Mathematics</a> (ERCIM)</li></ul>
       ManualTracking.ControlledElements.AccelerationResponse accelerationresponse1(K = 4) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesRadPerSec sumofsinesradpersec1(amps = {0.0568,0.0495,0.0397,0.0278,0.0162,0.0078,0.0052,0.0034,0.0024,0.0019,0.0015,0.0014}, freqs = {0.4602,0.6903,0.9971,1.4573,2.2243,3.6049,4.6786,6.366,8.2068,10.661,13.729,16.336}, phis = {0,0,0,0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesRadPerSec sumofsinesradpersec2(amps = {0.002,0.0046,0.0074,0.0125,0.0184,0.0235,0.0264,0.0316,0.0382,0.0489,0.0669,0.0848}, freqs = {0.3835,0.6136,0.8437,1.3039,2.1476,3.5282,4.5252,6.2893,8.1301,10.507,13.652,16.183}, phis = {0,0,0,0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
-      ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 81.92, backgroundVisible = 1, framesPerSec = 100) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 81.92, backgroundVisible = 1) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
     equation
       connect(accelerationresponse1.y,multichannelmodel1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));
       connect(multichannelmodel1.u,accelerationresponse1.u) annotation(Line(points = {{11,-0.00000000000000266454},{38.1119,-0.00000000000000266454},{38.1119,0},{38.1119,0}}));
@@ -885,10 +884,9 @@ a <i>ManualController</i> block.
 <p>
 An additional component, the <i>TaskSettings</i> block, must be included.  This
 block contains important details of the tracking task: <b>taskDuration</b> is 
-the total length of the task; <b>framesPerSec</b> is the experiment framerate;
-<b>previewTime</b> is the amount of time in advance to show the target motion;
-and <b>backgroundVisible</b> determines whether or not pursuit (background) 
-information is shown with hatch marks.  The last three parameters are only used
+the total length of the task; <b>previewTime</b> is the amount of time in advance
+to show the target motion; and <b>backgroundVisible</b> determines whether or not 
+pursuit (background) information is shown.  The last two parameters are only used
 in the user experiment, and not in the parameter tuning or simulation functions.
 The <i>TrackingTasks.FromReferences</i> package provides a few manual tracking
 tasks from the literature.
@@ -901,8 +899,8 @@ tasks from the literature.
     block DelayedGain
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K(min = 0.01, max = 100) = 1 "Proportional gain";
-      parameter Real tau(min = 0.1, max = 1) = 0.25 "Time delay (s)";
+      parameter Real K = 1 "Proportional gain";
+      parameter Real tau = 0.25 "Time delay (s)";
       Modelica.Blocks.Math.Gain gain(k = K);
       Modelica.Blocks.Nonlinear.FixedDelay timedelay(delayTime = tau);
     equation
@@ -918,9 +916,9 @@ tasks from the literature.
     block DelayedLead
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K(min = 0.01, max = 100) = 1 "Proportional gain";
-      parameter Real tau(min = 0.01, max = 1) = 0.25 "Time delay (s)";
-      parameter Real T(min = 0.05, max = 50) = 5 "Time constant of phase lead (s)";
+      parameter Real K = 1 "Proportional gain";
+      parameter Real tau = 0.25 "Time delay (s)";
+      parameter Real T = 5 "Time constant of phase lead (s)";
       ManualTracking.Blocks.ComplexZero complexzero(k = K, T = T);
       Modelica.Blocks.Nonlinear.FixedDelay timedelay(delayTime = tau);
     equation
@@ -936,9 +934,9 @@ tasks from the literature.
     block DelayedLag
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K(min = 0.01, max = 100) = 1 "Proportional gain";
-      parameter Real tau(min = 0.01, max = 1) = 0.25 "Time delay (s)";
-      parameter Real T(min = 0.05, max = 50) = 5 "Time constant of phase lag (s)";
+      parameter Real K = 1 "Proportional gain";
+      parameter Real tau = 0.25 "Time delay (s)";
+      parameter Real T = 5 "Time constant of phase lag (s)";
       Modelica.Blocks.Continuous.FirstOrder firstorder(k = K, T = T);
       Modelica.Blocks.Nonlinear.FixedDelay timedelay(delayTime = tau);
     equation
@@ -954,10 +952,10 @@ tasks from the literature.
     block DelayedLeadLag
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K(min = 0.01, max = 100) = 1 "Proportional gain";
-      parameter Real tau(min = 0.01, max = 1) = 0.25 "Time delay (s)";
-      parameter Real T1(min = 0.05, max = 50) = 10 "Time constant of phase lead (s)";
-      parameter Real T2(min = 0.05, max = 50) = 0.5 "Time constant of phase lag (s)";
+      parameter Real K = 1 "Proportional gain";
+      parameter Real tau = 0.25 "Time delay (s)";
+      parameter Real T1 = 10 "Time constant of phase lead (s)";
+      parameter Real T2 = 0.5 "Time constant of phase lag (s)";
       Modelica.Blocks.Math.Gain gain(k = K);
       Modelica.Blocks.Continuous.TransferFunction leadlag(b = {T1,1}, a = {T2,1});
       Modelica.Blocks.Nonlinear.FixedDelay timedelay(delayTime = tau);
@@ -975,11 +973,11 @@ tasks from the literature.
     block Precision1stOrderNM
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K(min = 0.01, max = 100) = 1 "Proportional gain";
-      parameter Real tau(min = 0.01, max = 1) = 0.25 "Time delay (s)";
-      parameter Real T1(min = 0.05, max = 50) = 5 "Time constant of phase lead (s)";
-      parameter Real T2(min = 0.05, max = 50) = 5 "Time constant of phase lag (s)";
-      parameter Real T3(min = 0.05, max = 50) = 5 "Time constant of neuromuscular filter (rad/s)";
+      parameter Real K = 1 "Proportional gain";
+      parameter Real tau = 0.25 "Time delay (s)";
+      parameter Real T1 = 5 "Time constant of phase lead (s)";
+      parameter Real T2 = 5 "Time constant of phase lag (s)";
+      parameter Real T3 = 5 "Time constant of neuromuscular filter (rad/s)";
       Modelica.Blocks.Math.Gain gain(k = K);
       Modelica.Blocks.Continuous.TransferFunction leadlag(b = {T1,1}, a = {T2,1});
       Modelica.Blocks.Continuous.FirstOrder firstorder(k = 1, T = T3);
@@ -999,12 +997,12 @@ tasks from the literature.
     block Precision2ndOrderNM
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K(min = 0.01, max = 100) = 1 "Proportional gain";
-      parameter Real tau(min = 0.01, max = 1) = 0.25 "Time delay (s)";
-      parameter Real T1(min = 0.05, max = 50) = 5 "Time constant of phase lead (s)";
-      parameter Real T2(min = 0.05, max = 50) = 5 "Time constant of phase lag (s)";
-      parameter Real omega(min = 5, max = 25) = 12 "Natural frequency of neuromuscular filter (rad/s)";
-      parameter Real zeta(min = 0, max = 1) = 0.707 "Damping ratio of neuromuscular filter";
+      parameter Real K = 1 "Proportional gain";
+      parameter Real tau = 0.25 "Time delay (s)";
+      parameter Real T1 = 5 "Time constant of phase lead (s)";
+      parameter Real T2 = 5 "Time constant of phase lag (s)";
+      parameter Real omega = 12 "Natural frequency of neuromuscular filter (rad/s)";
+      parameter Real zeta = 0.707 "Damping ratio of neuromuscular filter";
       Modelica.Blocks.Math.Gain gain(k = K);
       Modelica.Blocks.Continuous.TransferFunction leadlag(b = {T1,1}, a = {T2,1});
       Modelica.Blocks.Continuous.SecondOrder secondorder(k = 1, w = omega, D = zeta);
@@ -1024,13 +1022,13 @@ tasks from the literature.
     block Precision3rdOrderNM
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K(min = 0, max = 100) = 1 "Proportional gain";
-      parameter Real tau(min = 0.2, max = 1) = 0.25 "Time delay (s)";
-      parameter Real T1(min = 0.1, max = 10) = 5 "Time constant of phase lead (s)";
-      parameter Real T2(min = 0.1, max = 10) = 5 "Time constant of phase lag (s)";
-      parameter Real T3(min = 0.1, max = 10) = 5 "Time constant of neuromuscular filter (rad/s)";
-      parameter Real omega(min = 3, max = 30) = 12 "Natural frequency of neuromuscular filter (rad/s)";
-      parameter Real zeta(min = 0, max = 1) = 0.2 "Damping ratio of neuromuscular filter";
+      parameter Real K = 1 "Proportional gain";
+      parameter Real tau = 0.25 "Time delay (s)";
+      parameter Real T1 = 5 "Time constant of phase lead (s)";
+      parameter Real T2 = 5 "Time constant of phase lag (s)";
+      parameter Real T3 = 5 "Time constant of neuromuscular filter (rad/s)";
+      parameter Real omega = 12 "Natural frequency of neuromuscular filter (rad/s)";
+      parameter Real zeta = 0.2 "Damping ratio of neuromuscular filter";
       Modelica.Blocks.Math.Gain gain(k = K);
       Modelica.Blocks.Continuous.TransferFunction leadlag(b = {T1,1}, a = {T2,1});
       Modelica.Blocks.Continuous.FirstOrder firstorder(k = 1, T = T3);
@@ -1052,15 +1050,15 @@ tasks from the literature.
     block PrecisionOriginal
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K(min = 0.01, max = 100) = 1 "Proportional gain";
-      parameter Real tau(min = 0.01, max = 1) = 0.25 "Time delay (s)";
-      parameter Real T1(min = 0.05, max = 50) = 5 "Time constant of low-frequency phase lead (s)";
-      parameter Real T2(min = 0.05, max = 50) = 5 "Time constant of low-frequency phase lag (s)";
-      parameter Real T3(min = 0.05, max = 50) = 5 "Time constant of high-frequency phase lead (s)";
-      parameter Real T4(min = 0.05, max = 50) = 5 "Time constant of high-frequency phase lag (s)";
-      parameter Real T5(min = 0.05, max = 50) = 5 "Time constant of neuromuscular filter (rad/s)";
-      parameter Real omega(min = 3, max = 30) = 12 "Natural frequency of neuromuscular filter (rad/s)";
-      parameter Real zeta(min = 0, max = 1) = 0.2 "Damping ratio of neuromuscular filter";
+      parameter Real K = 1 "Proportional gain";
+      parameter Real tau = 0.25 "Time delay (s)";
+      parameter Real T1 = 5 "Time constant of low-frequency phase lead (s)";
+      parameter Real T2 = 5 "Time constant of low-frequency phase lag (s)";
+      parameter Real T3 = 5 "Time constant of high-frequency phase lead (s)";
+      parameter Real T4 = 5 "Time constant of high-frequency phase lag (s)";
+      parameter Real T5 = 5 "Time constant of neuromuscular filter (rad/s)";
+      parameter Real omega = 12 "Natural frequency of neuromuscular filter (rad/s)";
+      parameter Real zeta = 0.2 "Damping ratio of neuromuscular filter";
       Modelica.Blocks.Math.Gain gain(k = K);
       Modelica.Blocks.Continuous.TransferFunction leadlag1(b = {T1,1}, a = {T2,1});
       Modelica.Blocks.Continuous.TransferFunction leadlag2(b = {T3,1}, a = {T4,1});
@@ -1084,15 +1082,15 @@ tasks from the literature.
     block MultichannelModel "Manual controller model from Nieuwenhuizen et al. (2008) with compensatory (visual) and pursuit (vestibular) pathways"
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K1(min = 0.01, max = 100) = 0.17 "Gain of compensatory path";
-      parameter Real K2(min = 0.01, max = 100) = 1.59 "Gain of pursuit path";
-      parameter Real tau1(min = 0.01, max = 1) = 0.32 "Time delay of compensatory path (s)";
-      parameter Real tau2(min = 0.01, max = 1) = 0.29 "Time delay of pursuit path (s)";
-      parameter Real T1(min = 0.05, max = 50) = 2.93 "Time constant of compensatory phase lead (s)";
-      parameter Real T2(min = 0.05, max = 50) = 0.1 "Time constant of pursuit phase lead (s)";
-      parameter Real T3(min = 0.05, max = 50) = 6.0 "Time constant of pursuit phase lag (s)";
-      parameter Real omega(min = 3, max = 30) = 12.0 "Natural frequency of neuromuscular filter (rad/s)";
-      parameter Real zeta(min = 0, max = 1) = 0.3 "Damping ratio of neuromuscular filter";
+      parameter Real K1 = 0.17 "Gain of compensatory path";
+      parameter Real K2 = 1.59 "Gain of pursuit path";
+      parameter Real tau1 = 0.32 "Time delay of compensatory path (s)";
+      parameter Real tau2 = 0.29 "Time delay of pursuit path (s)";
+      parameter Real T1 = 2.93 "Time constant of compensatory phase lead (s)";
+      parameter Real T2 = 0.1 "Time constant of pursuit phase lead (s)";
+      parameter Real T3 = 6.0 "Time constant of pursuit phase lag (s)";
+      parameter Real omega = 12.0 "Natural frequency of neuromuscular filter (rad/s)";
+      parameter Real zeta = 0.3 "Damping ratio of neuromuscular filter";
       ManualTracking.Blocks.ComplexZero complexzero(k = K1, T = T1);
       Modelica.Blocks.Continuous.TransferFunction leadlag(b = {T2,1}, a = {T3,1});
       Modelica.Blocks.Continuous.Derivative derivative1(k = K2);
@@ -1121,14 +1119,14 @@ tasks from the literature.
     block MultimodalModel "Manual controller model from Zaal et al. (2012) with compensatory (visual) and pursuit (vestibular) pathways"
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K1(min = 0.01, max = 100) = 1.1 "Gain of compensatory path";
-      parameter Real K2(min = 0.01, max = 100) = 0.22 "Gain of pursuit path";
-      parameter Real tau1(min = 0.01, max = 1) = 0.23 "Time delay of compensatory path (s)";
-      parameter Real tau2(min = 0.01, max = 1) = 0.095 "Time delay of pursuit path (s)";
-      parameter Real T1(min = 0.05, max = 50) = 0.4 "Time constant of compensatory phase lead (s)";
-      parameter Real T2(min = 0.05, max = 50) = 0.8 "Time constant of compensatory phase lag (s)";
-      parameter Real omega(min = 3, max = 30) = 9.6 "Natural frequency of neuromuscular filter (rad/s)";
-      parameter Real zeta(min = 0, max = 1) = 0.215 "Damping ratio of neuromuscular filter";
+      parameter Real K1 = 1.1 "Gain of compensatory path";
+      parameter Real K2 = 0.22 "Gain of pursuit path";
+      parameter Real tau1 = 0.23 "Time delay of compensatory path (s)";
+      parameter Real tau2 = 0.095 "Time delay of pursuit path (s)";
+      parameter Real T1 = 0.4 "Time constant of compensatory phase lead (s)";
+      parameter Real T2 = 0.8 "Time constant of compensatory phase lag (s)";
+      parameter Real omega = 9.6 "Natural frequency of neuromuscular filter (rad/s)";
+      parameter Real zeta = 0.215 "Damping ratio of neuromuscular filter";
       ManualTracking.Blocks.ComplexZero complexzero(k = K1, T = T1);
       Modelica.Blocks.Continuous.TransferFunction leadlag(b = {T1,1}, a = {T2,1});
       Modelica.Blocks.Continuous.Derivative derivative(k = K2);
@@ -1155,17 +1153,17 @@ tasks from the literature.
     block DescriptiveModel "Manual controller model from Hosman and Stassen (1999) with visual and vestibular pathways"
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K1(min = 0.01, max = 100) = 1 "Gain of compensatory proportional path";
-      parameter Real K2(min = 0.01, max = 100) = 1 "Gain of compensatory derivative path";
-      parameter Real K3(min = 0.01, max = 100) = 1 "Gain of pursuit derivative path";
-      parameter Real K4(min = 0.01, max = 100) = 1 "Gain of pursuit acceleration path";
-      parameter Real tau1(min = 0.01, max = 1) = 0.25 "Time delay of compensatory proportional path (s)";
-      parameter Real tau2(min = 0.01, max = 1) = 0.25 "Time delay of compensatory derivative path (s)";
-      parameter Real tau3(min = 0.01, max = 1) = 0.25 "Time delay of pursuit derivative path (s)";
-      parameter Real tau4(min = 0.01, max = 1) = 0.25 "Time delay of combined paths (s)";
-      parameter Real T1(min = 0.05, max = 50) = 5 "Time constant of phase lead (s)";
-      parameter Real T2(min = 0.05, max = 50) = 5 "Time constant of low-frequency phase lag (s)";
-      parameter Real T3(min = 0.05, max = 50) = 5 "Time constant of high-frequency phase lag (s)";
+      parameter Real K1 = 1 "Gain of compensatory proportional path";
+      parameter Real K2 = 1 "Gain of compensatory derivative path";
+      parameter Real K3 = 1 "Gain of pursuit derivative path";
+      parameter Real K4 = 1 "Gain of pursuit acceleration path";
+      parameter Real tau1 = 0.25 "Time delay of compensatory proportional path (s)";
+      parameter Real tau2 = 0.25 "Time delay of compensatory derivative path (s)";
+      parameter Real tau3 = 0.25 "Time delay of pursuit derivative path (s)";
+      parameter Real tau4 = 0.25 "Time delay of combined paths (s)";
+      parameter Real T1 = 5 "Time constant of phase lead (s)";
+      parameter Real T2 = 5 "Time constant of low-frequency phase lag (s)";
+      parameter Real T3 = 5 "Time constant of high-frequency phase lag (s)";
       Modelica.Blocks.Math.Gain gain(k = K1);
       Modelica.Blocks.Continuous.Derivative derivativecompensatory(k = K2);
       Modelica.Blocks.Continuous.Derivative derivativepursuit(k = K3);
@@ -1180,9 +1178,9 @@ tasks from the literature.
       Modelica.Blocks.Math.Add add2combined;
     equation
       e = gain.u;
+      e = derivativecompensatory.u;
       connect(gain.y,timedelay1.u);
       connect(timedelay1.y,add2compensatory.u1);
-      e = derivativecompensatory.u;
       connect(derivativecompensatory.y,timedelay2.u);
       connect(timedelay2.y,add2compensatory.u2);
       connect(y,derivativepursuit.u);
@@ -1201,16 +1199,91 @@ tasks from the literature.
 </p>
 </html>"));
     end DescriptiveModel;
+    block StructuralFor1stOrder "Based on Hess structural model for first-order controlled element -- pulsing logic and proportional/derivative input switching are not modeled"
+      extends ManualTracking.Blocks.SI3SO;
+      extends ManualTracking.Icons.ManualController;
+      parameter Real K1 = 1 "Gain of proportional path";
+      parameter Real K2 = 1 "Gain of derivative path";
+      parameter Real K3 = 1 "Gain of proprioceptive feedback";
+      parameter Real tau1 = 0.25 "Time delay of derivative control path (s)";
+      parameter Real tau2 = 0.25 "Time delay of total forward control path (s)";
+      parameter Real T = 5 "Time constant of proprioceptive feedback lag (s)";
+      parameter Real omega = 12 "Natural frequency of neuromuscular filter (rad/s)";
+      parameter Real zeta = 0.2 "Damping ratio of neuromuscular filter";
+      Modelica.Blocks.Math.Gain gain(k = K1);
+      Modelica.Blocks.Continuous.Derivative derivativecompensatory(k = K2);
+      Modelica.Blocks.Nonlinear.FixedDelay timedelay1(delayTime = tau1);
+      Modelica.Blocks.Nonlinear.FixedDelay timedelay2(delayTime = tau2);
+      Modelica.Blocks.Continuous.TransferFunction derivativelagged(b = {K3,0}, a = {T,1});
+      Modelica.Blocks.Continuous.SecondOrder secondorder(k = 1, w = omega, D = zeta);
+      Modelica.Blocks.Math.Add add2forwardpaths;
+      Modelica.Blocks.Math.Add add2proprioceptive(k2 = -1);
+    equation
+      e = gain.u;
+      e = derivativecompensatory.u;
+      connect(gain.y,add2forwardpaths.u1);
+      connect(derivativecompensatory.y,timedelay1.u);
+      connect(timedelay1.y,add2forwardpaths.u2);
+      connect(add2forwardpaths.y,timedelay2.u);
+      connect(timedelay2.y,add2proprioceptive.u1);
+      connect(add2proprioceptive.y,secondorder.u);
+      connect(secondorder.y,derivativelagged.u);
+      connect(derivativelagged.y,add2proprioceptive.u2);
+      v = secondorder.y;
+      annotation(Documentation(info = "<html>
+<p>
+<img width=100% src=\"modelica://ManualTracking/Resources/Images/StructuralFor1stOrder.png\" alt=\"StructuralFor1stOrder\">
+</p>
+</html>"));
+    end StructuralFor1stOrder;
+    block StructuralFor2ndOrder "Based on Hess structural model for second-order controlled element -- pulsing logic and proportional/derivative input switching are not modeled"
+      extends ManualTracking.Blocks.SI3SO;
+      extends ManualTracking.Icons.ManualController;
+      parameter Real K1 = 1 "Gain of proportional path";
+      parameter Real K2 = 1 "Gain of derivative path";
+      parameter Real K3 = 1 "Gain of proprioceptive feedback";
+      parameter Real tau1 = 0.25 "Time delay of derivative control path (s)";
+      parameter Real tau2 = 0.25 "Time delay of total forward control path (s)";
+      parameter Real T1 = 5 "Time constant of first proprioceptive feedback lag (s)";
+      parameter Real T2 = 5 "Time constant of second proprioceptive feedback lag (s)";
+      parameter Real omega = 12 "Natural frequency of neuromuscular filter (rad/s)";
+      parameter Real zeta = 0.2 "Damping ratio of neuromuscular filter";
+      Modelica.Blocks.Math.Gain gain(k = K1);
+      Modelica.Blocks.Continuous.Derivative derivativecompensatory(k = K2);
+      Modelica.Blocks.Nonlinear.FixedDelay timedelay1(delayTime = tau1);
+      Modelica.Blocks.Nonlinear.FixedDelay timedelay2(delayTime = tau2);
+      Modelica.Blocks.Continuous.TransferFunction derivativelagged(b = {K3,0}, a = {T1 * T2,T1 + T2,1});
+      Modelica.Blocks.Continuous.SecondOrder secondorder(k = 1, w = omega, D = zeta);
+      Modelica.Blocks.Math.Add add2forwardpaths;
+      Modelica.Blocks.Math.Add add2proprioceptive(k2 = -1);
+    equation
+      e = gain.u;
+      e = derivativecompensatory.u;
+      connect(gain.y,add2forwardpaths.u1);
+      connect(derivativecompensatory.y,timedelay1.u);
+      connect(timedelay1.y,add2forwardpaths.u2);
+      connect(add2forwardpaths.y,timedelay2.u);
+      connect(timedelay2.y,add2proprioceptive.u1);
+      connect(add2proprioceptive.y,secondorder.u);
+      connect(secondorder.y,derivativelagged.u);
+      connect(derivativelagged.y,add2proprioceptive.u2);
+      v = secondorder.y;
+      annotation(Documentation(info = "<html>
+<p>
+<img width=100% src=\"modelica://ManualTracking/Resources/Images/StructuralFor2ndOrder.png\" alt=\"StructuralFor2ndOrder\">
+</p>
+</html>"));
+    end StructuralFor2ndOrder;
     block FeedforwardModel "Manual controller model from Drop et al. (2013) with compensatory and feedforward pathways"
       extends ManualTracking.Blocks.SI3SO;
       extends ManualTracking.Icons.ManualController;
-      parameter Real K1(min = 0.01, max = 100) = 1 "Gain of compensatory path";
-      parameter Real K2(min = 0.01, max = 100) = 1 "Gain of feedforward path";
-      parameter Real tau1(min = 0.01, max = 1) = 0.25 "Time delay of compensatory path (s)";
-      parameter Real tau2(min = 0.01, max = 1) = 0.25 "Time delay of feedforward path (s)";
-      parameter Real T(min = 0.05, max = 50) = 5 "Time constant of first-order lag in feedforward path (s)";
-      parameter Real omega(min = 3, max = 30) = 12 "Natural frequency of neuromuscular filter (rad/s)";
-      parameter Real zeta(min = 0, max = 1) = 0.2 "Damping ratio of neuromuscular filter";
+      parameter Real K1 = 1 "Gain of compensatory path";
+      parameter Real K2 = 1 "Gain of feedforward path";
+      parameter Real tau1 = 0.25 "Time delay of compensatory path (s)";
+      parameter Real tau2 = 0.25 "Time delay of feedforward path (s)";
+      parameter Real T = 5 "Time constant of first-order lag in feedforward path (s)";
+      parameter Real omega = 12 "Natural frequency of neuromuscular filter (rad/s)";
+      parameter Real zeta = 0.2 "Damping ratio of neuromuscular filter";
       Modelica.Blocks.Math.Gain gain(k = K1);
       Modelica.Blocks.Continuous.FirstOrder firstorder(k = K2, T = T);
       Modelica.Blocks.Nonlinear.FixedDelay timedelay1(delayTime = tau1);
@@ -1497,7 +1570,7 @@ in Shirley and Young (1968), and with very low damping in Potter and Singhose
         parameter Real phis[:] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0} "Sine wave phase angles";
       protected
         Modelica.Blocks.Math.MultiSum sineSummer(nu = size(amps, 1));
-        ManualTracking.ForcingFunctions.SourceSineHz sineWave[size(amps, 1)](amplitude = amps, freq = freqs, phase = phis);
+        ManualTracking.Blocks.SourceSineHz sineWave[size(amps, 1)](amplitude = amps, freq = freqs, phase = phis);
       equation
         for i in 1:size(amps, 1) loop
         connect(sineWave[i].y,sineSummer.u[i]);
@@ -1513,7 +1586,7 @@ in Shirley and Young (1968), and with very low damping in Potter and Singhose
         parameter Real phis[:] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0} "Sine wave phase angles";
       protected
         Modelica.Blocks.Math.MultiSum sineSummer(nu = size(amps, 1));
-        ManualTracking.ForcingFunctions.SourceSineRadPerSec sineWave[size(amps, 1)](amplitude = amps, freq = freqs, phase = phis);
+        ManualTracking.Blocks.SourceSineRadPerSec sineWave[size(amps, 1)](amplitude = amps, freq = freqs, phase = phis);
       equation
         for i in 1:size(amps, 1) loop
         connect(sineWave[i].y,sineSummer.u[i]);
@@ -1521,12 +1594,12 @@ in Shirley and Young (1968), and with very low damping in Potter and Singhose
         end for;
         connect(sineSummer.y,y);
       end SumOfSinesRadPerSec;
-      block StepReferenceSignal
+      block Step
         extends Modelica.Blocks.Interfaces.SO;
         Modelica.Blocks.Sources.Step step1(height = 1, startTime = 1);
       equation
         connect(step1.y,y);
-      end StepReferenceSignal;
+      end Step;
     end ReferenceSignals;
     package DisturbanceInputs
       extends Modelica.Icons.Package;
@@ -1538,7 +1611,7 @@ in Shirley and Young (1968), and with very low damping in Potter and Singhose
         parameter Real phis[:] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0} "Sine wave phase angles";
       protected
         Modelica.Blocks.Math.MultiSum sineSummer(nu = size(amps, 1));
-        ManualTracking.ForcingFunctions.SourceSineHz sineWave[size(amps, 1)](amplitude = amps, freq = freqs, phase = phis);
+        ManualTracking.Blocks.SourceSineHz sineWave[size(amps, 1)](amplitude = amps, freq = freqs, phase = phis);
       equation
         for i in 1:size(amps, 1) loop
         connect(sineWave[i].y,sineSummer.u[i]);
@@ -1554,7 +1627,7 @@ in Shirley and Young (1968), and with very low damping in Potter and Singhose
         parameter Real phis[:] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0} "Sine wave phase angles";
       protected
         Modelica.Blocks.Math.MultiSum sineSummer(nu = size(amps, 1));
-        ManualTracking.ForcingFunctions.SourceSineRadPerSec sineWave[size(amps, 1)](amplitude = amps, freq = freqs, phase = phis);
+        ManualTracking.Blocks.SourceSineRadPerSec sineWave[size(amps, 1)](amplitude = amps, freq = freqs, phase = phis);
       equation
         for i in 1:size(amps, 1) loop
         connect(sineWave[i].y,sineSummer.u[i]);
@@ -1563,24 +1636,6 @@ in Shirley and Young (1968), and with very low damping in Potter and Singhose
         connect(sineSummer.y,y);
       end SumOfSinesRadPerSec;
     end DisturbanceInputs;
-    block SourceSineHz
-      extends Modelica.Blocks.Interfaces.SO;
-      parameter Real amplitude = 1 "Amplitude of sine wave";
-      parameter Real freq = 1 "Frequency of sine wave";
-      parameter Real phase = 0 "Phase of sine wave";
-    protected
-      constant Real pi = Modelica.Constants.pi;
-    equation
-      y = amplitude * Modelica.Math.sin(2 * pi * (freq * time + phase));
-    end SourceSineHz;
-    block SourceSineRadPerSec
-      extends Modelica.Blocks.Interfaces.SO;
-      parameter Real amplitude = 1 "Amplitude of sine wave";
-      parameter Real freq = 1 "Frequency of sine wave";
-      parameter Real phase = 0 "Phase of sine wave";
-    equation
-      y = amplitude * Modelica.Math.sin(freq * time + phase);
-    end SourceSineRadPerSec;
     annotation(Documentation(info = "<html>
 <p>
 In manual tracking experiments, the target's motion is prescribed by a
@@ -1680,13 +1735,28 @@ functions will not be able to parse the text of the tracking task.
       e = r - y;
       u = v + w;
     end SI3SO;
+    block SourceSineHz
+      extends Modelica.Blocks.Interfaces.SO;
+      parameter Real amplitude = 1 "Amplitude of sine wave";
+      parameter Real freq = 1 "Frequency of sine wave";
+      parameter Real phase = 0 "Phase of sine wave";
+    protected
+      constant Real pi = Modelica.Constants.pi;
+    equation
+      y = amplitude * Modelica.Math.sin(2 * pi * (freq * time + phase));
+    end SourceSineHz;
+    block SourceSineRadPerSec
+      extends Modelica.Blocks.Interfaces.SO;
+      parameter Real amplitude = 1 "Amplitude of sine wave";
+      parameter Real freq = 1 "Frequency of sine wave";
+      parameter Real phase = 0 "Phase of sine wave";
+    equation
+      y = amplitude * Modelica.Math.sin(freq * time + phase);
+    end SourceSineRadPerSec;
   end Blocks;
   package Icons "Icons package"
     extends Modelica.Icons.Package;
     extends ManualTracking.Icons.IconsMSL;
-    partial class TrackingTask
-      annotation(Icon(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2}), graphics = {Rectangle(origin = {-39.4847,6.14035}, fillColor = {255,255,255}, extent = {{-20,-20},{20,20}}),Rectangle(origin = {40.5153,6.14035}, fillColor = {255,255,255}, extent = {{-20,-20},{20,20}}),Polygon(origin = {10.5153,6.14035}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{10,0},{-5,5},{-5,-5},{10,0}}),Polygon(origin = {-39.4847,-23.8596}, rotation = 270, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{-10,0},{5,5},{5,-5},{-10,0}}),Polygon(origin = {-69.4847,6.14035}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{10,0},{-5,5},{-5,-5},{10,0}}),Line(origin = {-79.4847,6.14035}, points = {{20,0},{-20,0}}),Line(origin = {0.515254,6.14035}, points = {{20,0},{-20,0}}),Line(origin = {0.252154,-33.4795}, points = {{39.6199,19.4444},{39.6199,-19.4444},{-39.6199,-19.4444},{-39.6199,17.9825}}),Line(origin = {-59.1923,26.1404}, points = {{20,0},{20.0585,31.8713}}),Polygon(origin = {-38.9584,36.0819}, rotation = 270, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{10,0},{-5,5},{-5,-5},{10,0}})}));
-    end TrackingTask;
     partial block ManualController
       annotation(Icon(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2}), graphics = {Text(origin = {-60,0}, extent = {{-30,30},{30,-30}}, textString = "r(t)"),Text(origin = {0,60}, extent = {{-30,30},{30,-30}}, textString = "w(t)"),Text(origin = {60,0}, extent = {{-30,30},{30,-30}}, textString = "u(t)"),Text(origin = {0,-60}, extent = {{-30,30},{30,-30}}, textString = "y(t)")}));
     end ManualController;
@@ -1702,6 +1772,9 @@ functions will not be able to parse the text of the tracking task.
     partial block TaskSettings
       annotation(Icon(coordinateSystem(extent = {{-100.0,-100.0},{100.0,100.0}}), graphics = {Polygon(origin = {1.3835,-4.1418}, rotation = 45.0, fillColor = {64,64,64}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{-15.0,93.333},{-15.0,68.333},{0.0,58.333},{15.0,68.333},{15.0,93.333},{20.0,93.333},{25.0,83.333},{25.0,58.333},{10.0,43.333},{10.0,-41.667},{25.0,-56.667},{25.0,-76.667},{10.0,-91.667},{0.0,-91.667},{0.0,-81.667},{5.0,-81.667},{15.0,-71.667},{15.0,-61.667},{5.0,-51.667},{-5.0,-51.667},{-15.0,-61.667},{-15.0,-71.667},{-5.0,-81.667},{0.0,-81.667},{0.0,-91.667},{-10.0,-91.667},{-25.0,-76.667},{-25.0,-56.667},{-10.0,-41.667},{-10.0,43.333},{-25.0,58.333},{-25.0,83.333},{-20.0,93.333}}),Polygon(origin = {10.1018,5.218}, rotation = -45.0, fillColor = {255,255,255}, fillPattern = FillPattern.Solid, points = {{-15.0,87.273},{15.0,87.273},{20.0,82.273},{20.0,27.273},{10.0,17.273},{10.0,7.273},{20.0,2.273},{20.0,-2.727},{5.0,-2.727},{5.0,-77.727},{10.0,-87.727},{5.0,-112.727},{-5.0,-112.727},{-10.0,-87.727},{-5.0,-77.727},{-5.0,-2.727},{-20.0,-2.727},{-20.0,2.273},{-10.0,7.273},{-10.0,17.273},{-20.0,27.273},{-20.0,82.273}})}));
     end TaskSettings;
+    partial class TrackingTask
+      annotation(Icon(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2}), graphics = {Rectangle(origin = {-39.4847,6.14035}, fillColor = {255,255,255}, extent = {{-20,-20},{20,20}}),Rectangle(origin = {40.5153,6.14035}, fillColor = {255,255,255}, extent = {{-20,-20},{20,20}}),Polygon(origin = {10.5153,6.14035}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{10,0},{-5,5},{-5,-5},{10,0}}),Polygon(origin = {-39.4847,-23.8596}, rotation = 270, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{-10,0},{5,5},{5,-5},{-10,0}}),Polygon(origin = {-69.4847,6.14035}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{10,0},{-5,5},{-5,-5},{10,0}}),Line(origin = {-79.4847,6.14035}, points = {{20,0},{-20,0}}),Line(origin = {0.515254,6.14035}, points = {{20,0},{-20,0}}),Line(origin = {0.252154,-33.4795}, points = {{39.6199,19.4444},{39.6199,-19.4444},{-39.6199,-19.4444},{-39.6199,17.9825}}),Line(origin = {-59.1923,26.1404}, points = {{20,0},{20.0585,31.8713}}),Polygon(origin = {-38.9584,36.0819}, rotation = 270, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{10,0},{-5,5},{-5,-5},{10,0}})}));
+    end TrackingTask;
     partial class Blocks
       annotation(Icon(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2}), graphics = {Rectangle(extent = {{-40,40},{40,-40}}),Polygon(origin = {-50,0}, fillPattern = FillPattern.Solid, points = {{10,0},{-5,5},{-5,-5},{10,0}}),Line(origin = {-50,0}, points = {{-30,0},{0,0}}),Line(origin = {70.0939,0.516432}, points = {{-30,0},{0,0}}),Polygon(origin = {70.0939,0.516432}, fillPattern = FillPattern.Solid, points = {{10,0},{-5,5},{-5,-5},{10,0}})}));
     end Blocks;
@@ -1730,3 +1803,4 @@ Copyright &copy; 2014-2015, James Jackson Potter.
 </p>
 </html>"));
 end ManualTracking;
+

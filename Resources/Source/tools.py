@@ -6,6 +6,8 @@ def get_task_info(mofileText, taskName):
     trackingText = get_class_subtext(mofileText, ['package'], 'TrackingTasks') # isolate the TrackingTasks package
     taskName = taskName.split('.')[-1] # split taskName into package names and model name
     taskText = get_class_subtext(trackingText, ['class', 'model', 'block'], taskName) # note that model name must be unique within TrackingTasks package
+
+    # Go through each line of tracking task model
     for textLine in taskText:
         if 'ManualTracking.' in textLine: # declaring instance of one of the models
             textLine = strip_annotation_text(textLine) # remove whole annotation section
@@ -25,38 +27,38 @@ def get_task_info(mofileText, taskName):
     # get_instance_details() got only parameters modified in the specific TrackingTask class ... we need to find all parameters
     controllerPackage = get_class_subtext(mofileText, ['package'], 'ManualControllers') # isolate ManualControllers package
     controllerText = get_class_subtext(controllerPackage, ['class', 'model', 'block'], controllerModel.split('.')[-1]) # isolate controller model
-    controllerDefaults = get_class_parameters(controllerText) # get all controller parameters
-    (controllerMin, controllerMax, controllerStr) = get_class_minmaxstr(controllerText)
+    (controllerDefaults, controllerStr) = get_class_parameters(controllerText) # get all controller parameters
     controllerParams = overwrite_dict_values(controllerDefaults, controllerParams) # overwrite controller default values with modified values in instance declaration
 
     # Retrieve all settings in the TaskSettings model, even those not modified in the TrackingTask class
     settingsText = get_class_subtext(trackingText, ['class', 'model', 'block'], settingsModel.split('.')[-1]) # isolate settings model
-    settingsDefaults = get_class_parameters(settingsText)
+    (settingsDefaults, settingsStr) = get_class_parameters(settingsText)
     settingsParams = overwrite_dict_values(settingsDefaults, settingsParams)
 
     # Unpack TaskSettings parameters from dictionary
     finalTime = settingsParams['taskDuration']
-    stepTime = float(1.0/settingsParams['framesPerSec'])
     previewTime = settingsParams['previewTime']
     backgroundVisible = settingsParams['backgroundVisible']
 
     # Return everything in tuples
-    return ((controllerModel, controllerName, controllerParams, controllerMin, controllerMax, controllerStr, controllerComments), 
+    return ((controllerModel, controllerName, controllerParams, controllerStr, controllerComments), 
             (elementModel, elementName, elementParams, elementComments),
             (referenceModel, referenceName, referenceParams, referenceComments),
             (disturbanceModel, disturbanceName, disturbanceParams, disturbanceComments),
-            (finalTime, stepTime, previewTime, backgroundVisible))
+            (finalTime, previewTime, backgroundVisible))
 
 
 def get_class_subtext(fullText, classTypes, className):
     appendFlag = False
     classText = False
     
+    # Find lines of [fullText] that are within class [className], and have type in [classTypes]
     for lineText in fullText:
         for oneType in classTypes: # can input list of class types, e.g. ['class', 'model', 'block']
             if oneType + ' ' + className in lineText:
-                appendFlag = True
-                classText = [] # declaration was found, so initialize string to be returned
+                if (len(oneType + ' ' + className) == len(lineText.strip())) or (lineText.strip()[len(oneType + ' ' + className)] == ' '):
+                    appendFlag = True
+                    classText = [] # declaration was found, so initialize string to be returned
         if appendFlag:
             classText.append(lineText)
         if 'end ' + className + ';' in lineText:
@@ -102,15 +104,19 @@ def get_instance_details(declarationText):
 
 
 def get_class_parameters(classText):
-    paramDict = {}
-     
+    paramValues = {}
+    paramComments = {}
+
     for lineNum in classText:
         if 'parameter ' in lineNum.strip():
             modLine = lineNum.strip() # strip leading and trailing white space
             modLine = modLine.replace(';', '') # remove semicolons
             modLine = modLine.split(' ', 2)[2] # keep only text after 'parameter DATATYPE '
+            
             if '"' in modLine:
-                (modLine, commentString, junk) = modLine.split('"')          
+                (modLine, commentString, junk) = modLine.split('"')       
+            else:
+                commentString = ''
             modLine = modLine.replace(' ', '') # eliminate white spaces
 
             if '(' in modLine:
@@ -120,7 +126,9 @@ def get_class_parameters(classText):
             else:
                 (paramName, paramAssigned) = modLine.split('=') 
 
+            paramComments[paramName] = commentString
             paramVal = '' # must build parameter value from individual characters because it could be Boolean
+            
             if any(oneChar.isdigit() for oneChar in paramAssigned): # Real
                 isNum = True
                 for oneChar in paramAssigned:
@@ -128,56 +136,30 @@ def get_class_parameters(classText):
                         paramVal = paramVal + oneChar
                     else: 
                         isNum = False
-                paramDict[paramName] = float(paramVal)
+                paramValues[paramName] = float(paramVal)
             else: # Boolean 
                 if paramAssigned == 'false':
-                    paramDict[paramName] = 'False'
+                    paramValues[paramName] = 'False'
                 elif paramAssigned == 'true':
-                    paramDict[paramName] = 'True'
+                    paramValues[paramName] = 'True'
                 else:
-                    print "Parameter was unrecognized."
+                    print "Parameter was unrecognized.\n"
 
-    return paramDict
-
-
-def get_class_minmaxstr(classText):
-    paramMin = {}
-    paramMax = {}
-    paramStr = {}
-
-    for lineNum in classText:
-        if 'parameter ' in lineNum.strip():
-            commentString = '' # will get overwritten if the parameter has a string
-            modLine = lineNum.strip() # strip leading and trailing white space
-            modLine = modLine.replace(';', '') # remove semicolons
-            modLine = modLine.split(' ', 2)[2] # keep only text after 'parameter DATATYPE '
-            if '"' in modLine:
-                (modLine, commentString, junk) = modLine.split('"')          
-            modLine = modLine.replace(' ', '') # eliminate white spaces
-            (paramName, theRest) = modLine.split('(')
-            (insideParen, varVal) = theRest.split(')')
-            insideParen = insideParen.split(',')
-            paramStr[paramName] = commentString
-
-            for oneVar in insideParen:
-                if str(oneVar.split('=')[0]) == 'min':
-                    paramMin[paramName] = float(oneVar.split('=')[1])
-                elif str(oneVar.split('=')[0]) == 'max':
-                    paramMax[paramName] = float(oneVar.split('=')[1])
-
-    return (paramMin, paramMax, paramStr)
+    return (paramValues, paramComments)
 
 
 def strip_annotation_text(textRaw):
-    if 'annotation(' in textRaw: textOut = textRaw.split('annotation(')[0] # remove annotation text
-    else: textOut = textRaw
+    if 'annotation(' in textRaw: 
+        textOut = textRaw.split('annotation(')[0] # remove annotation text
+    else: 
+        textOut = textRaw
     
     return textOut
 
 
-def tune_manual_controller(taskInfo, controllerInfo, saveDir, inputData=False, printVerbose=False):   
+def tune_manual_controller(taskInfo, controllerInfo, saveDir, optMethod='Nelder-Mead', inputData=False, printVerbose=False):   
     (controllerName, taskModel, taskFile) = taskInfo
-    (controllerParams, controllerMin, controllerMax, params2tune) = controllerInfo
+    (controllerParams, params2tune) = controllerInfo
 
     # Make deep copy of initial controller parameter dictionary
     import copy
@@ -186,7 +168,7 @@ def tune_manual_controller(taskInfo, controllerInfo, saveDir, inputData=False, p
     # Make FMUMODEL once, instead of letting run_tracking_simulation() do it every time
     logFile = os.path.join(saveDir, taskModel.replace('.','_') + '_log.txt')
     fmuName = fmi.compile_fmu_openmodelica(taskModel, taskFile, saveDir=saveDir, printVerbose=printVerbose)
-    FMUMODEL = fmi.load_fmu_jmodelica(fmuName, logFile, printVerbose=printVerbose)
+    FMUMODEL = fmi.load_fmu_pyfmi(fmuName, logFile, printVerbose=printVerbose)
 
     # Note that variables in body of tune_manual_controller() below can be accessed in compute_cost_value()
     if inputData: 
@@ -196,15 +178,11 @@ def tune_manual_controller(taskInfo, controllerInfo, saveDir, inputData=False, p
         inputData = False
         matchOutput = False
 
-    # Define initial values, lower bounds, and upper bounds for tuned parameters
-    (x0, lb, ub) = ([], [], [])
+    # Define initial values for tuned parameters
+    x0 = []
     for oneKey in params2tune:
         x0.append(controllerInit[oneKey])
-        lb.append(controllerMin[oneKey])
-        ub.append(controllerMax[oneKey])
-    lb = numpy.array(lb) # convert to numpy array format for jmodelica
-    ub = numpy.array(ub)        
-    x0 = numpy.array(x0) 
+    x0 = numpy.array(x0) # convert to numpy array format for jmodelica
 
     # Calculate objective function value for current parameter values
     def compute_cost_value(x):
@@ -215,9 +193,10 @@ def tune_manual_controller(taskInfo, controllerInfo, saveDir, inputData=False, p
         if printVerbose:
             print "Modified parameters:"
             print modifiedParams
+            print ""
 
         # Run tracking simulation
-        mantra.run_tracking_simulation(FMUMODEL=FMUMODEL, modifiedParams=modifiedParams, inputData=inputData, plotResults=False, printResults=False, saveResults=False, runOnce=False)
+        mantra.run_tracking_simulation(FMUMODEL=FMUMODEL, modifiedParams=modifiedParams, inputData=inputData, plotResults=False, saveResults=False, runOnce=False)
         (t_sim, r_sim, y_sim, w_sim, u_sim) = read_data_csv(dirName=saveDir, fileName=taskModel.split('.')[-1]+'_sim.csv')      
 
         # Compute cost value
@@ -230,15 +209,16 @@ def tune_manual_controller(taskInfo, controllerInfo, saveDir, inputData=False, p
             costVal = numpy.sqrt(numpy.mean(t_intervals*(numpy.array(r_sim[0:-1]) - numpy.array(y_sim[0:-1]))**2)) # compare reference signal to controlled element state
 
         if printVerbose:
-            print 'Current x: '
+            print '\nCurrent x: '
             print x
             print 'Cost value:'
             print costVal
+            print ""
 
         return costVal
 
     if not printVerbose: OLDSTDOUT = disable_console_output()
-    optParams = fmi.minimize_cost_dfo(compute_cost_value, x0, lb, ub, printVerbose=printVerbose)
+    optParams = fmi.minimize_cost_scipy(compute_cost_value, x0, optMethod=optMethod, printVerbose=printVerbose)
     if not printVerbose: enable_console_output(OLDSTDOUT) 
     
     return optParams
@@ -248,7 +228,7 @@ def plot_variable_trajectories(t_hist, traj_sets, titleString):
     try: 
         import matplotlib.pyplot as plt  
     except: 
-        print "Could not import matplotlib.pyplot. Matplotlib is required for plotting."
+        print "Could not import matplotlib.pyplot. Matplotlib is required for plotting.\n"
         return
 
     plt.title(titleString)
@@ -265,10 +245,12 @@ def plot_variable_trajectories(t_hist, traj_sets, titleString):
 def generate_fmu_signal(modelicaModel, modelicaFile, t_hist, paramDict, fmuMaxh, saveDir, odeSolver, printVerbose=False):  
     assert t_hist[0] == 0, "Time values must start at t=0."
 
+    fmuName = os.path.join(os.environ['MANTRA_TEMP'], modelicaModel.replace('.', '_')+'.fmu')
     logFile = os.path.join(saveDir, modelicaModel.replace('.', '_') + '_log.txt')
     resultFile = os.path.join(saveDir, modelicaModel.replace('.', '_') + '_results.txt')
-    fmuName = fmi.compile_fmu_openmodelica(modelicaModel, modelicaFile, saveDir, printVerbose=printVerbose)
-    FMUMODEL = fmi.load_fmu_jmodelica(fmuName, logFile, printVerbose=printVerbose)
+    if not os.path.isfile(fmuName):
+        fmuName = fmi.compile_fmu_openmodelica(modelicaModel, modelicaFile, saveDir, printVerbose=printVerbose)
+    FMUMODEL = fmi.load_fmu_pyfmi(fmuName, logFile, printVerbose=printVerbose)
     
     # Overwrite default parameter values
     for oneKey in paramDict.keys():
@@ -276,7 +258,7 @@ def generate_fmu_signal(modelicaModel, modelicaFile, t_hist, paramDict, fmuMaxh,
 
     fmuOpts = fmi.set_fmu_options(False, resultFile, fmuMaxh, solverName=odeSolver)
     FMUMODEL.initialize()
-    (FMUMODEL, fmuResults) = fmi.simulate_fmu_jmodelica(FMUMODEL, fmuOpts, 0, t_hist[-1], printVerbose=printVerbose)
+    (FMUMODEL, fmuResults) = fmi.simulate_fmu(FMUMODEL, fmuOpts, 0, t_hist[-1], printVerbose=printVerbose)
     t_sig = fmuResults['time']
     y_sig = fmuResults['y']
     signalOut = numpy.interp(t_hist, t_sig, y_sig)
@@ -298,16 +280,19 @@ def overwrite_dict_values(baseDict, overwriteDict, overwriteKeys=False, overwrit
 
 
 def print_controller_parameters(paramDict, paramStr):
-    print "\nController parameters:" 
+    print "Controller parameters (excluding time delays):" 
     keyNum = 1    
     for oneKey in paramDict.keys():
-        print '  ' + str(keyNum) + '. ' + oneKey + ' -- ' + paramStr[oneKey]
+        if oneKey[0:3] != 'tau':
+            print '  ' + str(keyNum) + '. ' + oneKey + ' -- ' + paramStr[oneKey]
         keyNum = keyNum + 1
     print ""
 
 
 def select_tuned_parameters(paramDict):
-    paramNums_raw = raw_input("Please enter a comma-separated number list: ")
+    paramNums_raw = raw_input("Please enter a comma-separated numbers list\nspecifying parameters to tune: ")
+    print ""
+
     paramNums = str(paramNums_raw).replace(' ', '').split(',') # remove white space and split into individual numbers
     paramNums = [int(p) for p in paramNums] # parameter numbers in list form
     params2tune = []
@@ -315,6 +300,7 @@ def select_tuned_parameters(paramDict):
 
     for oneKey in paramDict.keys():
         if keyNum in paramNums:
+            assert oneKey[0:3] != 'tau', "Number not found on list of parameters"
             params2tune.append(oneKey)
         keyNum = keyNum + 1
 
@@ -356,9 +342,7 @@ def read_data_csv(dirName, fileName):
                 w_data = w_data + [eval(row[3])]
                 u_data = u_data + [eval(row[4])]
             lineNum = lineNum + 1
-##############
-    #os.remove(fileNameAbs)
-##############
+    
     return (t_data, r_data, y_data, w_data, u_data)
 
 

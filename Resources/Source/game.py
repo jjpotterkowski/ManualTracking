@@ -68,7 +68,7 @@ def run_tracking_experiment(elementModel, modelicaFile):
     resultsFile = os.path.join(tempDir, elementModel.replace('.', '_') + '_results.txt')
     fmuOpts = fmi.set_fmu_options(False, resultsFile, stepTime, solverName='CVode')
     fmuName = fmi.compile_fmu_openmodelica(elementModel, modelicaFile, saveDir=tempDir)
-    FMUMODEL = fmi.load_fmu_jmodelica(fmuName, logFile)
+    FMUMODEL = fmi.load_fmu_pyfmi(fmuName, logFile)
     FMUMODEL.initialize()
 
     # Calculate input and display gains
@@ -79,8 +79,7 @@ def run_tracking_experiment(elementModel, modelicaFile):
     JOYOBJECT = get_input_device()
 
     # Allow user to initiate experiment
-    print ""
-    raw_input("Press 'Enter' to bring up the display, then press any key except 'q' to start the experiment.")
+    raw_input("Press 'Enter' to bring up the display, then press any key except 'q' to start the experiment.\n")
 
     # Start up pygame window
     FPSCLOCK = pygame.time.Clock()
@@ -137,7 +136,7 @@ def calculate_gains(elementModel, saveDir):
         resultsFile = os.path.join(saveDir, elementModel.replace('.', '_') + '_step_results.txt')
         fmuOpts = fmi.set_fmu_options(False, resultsFile, stepTime, solverName='CVode')
         fmuInput = numpy.transpose(numpy.vstack(([0,ymoveTime], [1,1]))) # step input
-        (FMUMODEL, fmuResults) = fmi.simulate_fmu_jmodelica(FMUMODEL, fmuOpts, 0, ymoveTime, controlInput=(['u'], fmuInput))
+        (FMUMODEL, fmuResults) = fmi.simulate_fmu(FMUMODEL, fmuOpts, 0, ymoveTime, controlInput=(['u'], fmuInput))
         ymoveDist = fmuResults['y'][-1] # distance moved by controlled element when step input is applied for ymoveTime
         unitDist = pixelDist/displayGain 
         inputGain = unitDist/ymoveDist # controlled element can move unitDist [scaled pixels] in time ymoveTime [sec]
@@ -149,18 +148,18 @@ def calculate_gains(elementModel, saveDir):
 
 def get_input_device():
     pygame.joystick.init()
-    print "\nChecking for input devices."
+    print "Checking for input devices.\n"
     try:
         JOYOBJECT = pygame.joystick.Joystick(0)
         JOYOBJECT.init()        
-        print "\nJoystick detected. Use joystick or keyboard."
+        print "Joystick detected. Use joystick or keyboard.\n"
         print "Notes:"
         print "Extra SDL_ messages printed to the console are harmless, but they can be avoided by installing the newest version of pygame). Using the joystick should yield better result than the keyboard for tune_manual_controller().\n"
     except:
         JOYOBJECT = False
-        print "\nNo joystick detected. Use keyboard."
+        print "No joystick detected. Use keyboard.\n"
         print "Notes:"
-        print "The tune_manual_controller() method may give poor results because the discontinuous keyboard input cannot be well-represented by continuous controller models that are provided in the ManualTracking library."
+        print "The tune_manual_controller() method may give poor results because the discontinuous keyboard input cannot be well-represented by continuous controller models that are provided in the ManualTracking library.\n"
 
     return JOYOBJECT
 
@@ -188,7 +187,7 @@ def update_cursor_position(frameIn):
     fmuInput = numpy.transpose(numpy.vstack((t_input, u_input)))
 
     # Simulate the model response to input
-    (FMUMODEL, fmuResults) = fmi.simulate_fmu_jmodelica(FMUMODEL, fmuOpts, t_hist[currentFrame], t_hist[nextFrame], controlInput=(['u'], fmuInput))
+    (FMUMODEL, fmuResults) = fmi.simulate_fmu(FMUMODEL, fmuOpts, t_hist[currentFrame], t_hist[nextFrame], controlInput=(['u'], fmuInput))
 
     # Extract simulation results
     y_hist[nextFrame] = fmuResults['y'][-1]
