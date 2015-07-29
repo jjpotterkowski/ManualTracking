@@ -99,7 +99,7 @@ pyjmi, Pygame, and matplotlib.
     end PythonFunctions;
     class ModelicaLicense2 "Modelica License 2"
       extends Modelica.Icons.Information;
-      annotation(Documentation(info = "<html>
+      annotation(preferredView = "info", Documentation(info = "<html>
 <head>
 	<title>The Modelica License 2</title>
 <style type=\"text/css\">
@@ -792,36 +792,66 @@ and Mathematics</a> (ERCIM)</li></ul>
       parameter Modelica.SIunits.Time previewTime = 0 "Time in advance to show target motion (for user experiment)";
       parameter Integer backgroundVisible = 0 "Show background hatch marks if 1, do not show if 0 (for user experiment)";
     end TaskSettings;
-    model SampleTaskCompensatory "Sample compensatory tracking task"
+    model ExampleCompensatory "Sample compensatory tracking task"
       extends Modelica.Blocks.Icons.Block;
       extends ManualTracking.Icons.TrackingTask;
-      ManualTracking.ManualControllers.Precision2ndOrderNM precision2ndordernm1 annotation(Placement(visible = true, transformation(origin = {-0.00000000000000210942,-0.00000000000000266454}, extent = {{-10,-10},{10,10}}, rotation = 0)));
-      ManualTracking.ControlledElements.VelocityResponse velocityresponse1(K = 1) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
-      ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesHz sumofsineshz1(amps = {10.493,0.835,0.735,0.581,0.474,0.366,0.266,0.167,0.071}, freqs = {0.01,0.03,0.05,0.11,0.19,0.33,0.55,0.91,1.49}, phis = {0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
-      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz sumofsineshz2 annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
-      ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 40) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ManualControllers.Precision2ndOrderNM manualcontroller1(K = 12, T1 = 10, T2 = 60) annotation(Placement(visible = true, transformation(origin = {-0.00000000000000210942,-0.00000000000000266454}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ControlledElements.VelocityResponse controlledelement1(K = 1) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesHz referencesignal1(amps = {10.493,0.835,0.735,0.581,0.474,0.366,0.266,0.167,0.071}, freqs = {0.01,0.03,0.05,0.11,0.19,0.33,0.55,0.91,1.49}, phis = {0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1 annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
+      ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 60, backgroundVisible = 0, previewTime = 0) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
     equation
-      connect(velocityresponse1.y,precision2ndordernm1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));
-      connect(precision2ndordernm1.u,velocityresponse1.u) annotation(Line(points = {{11,-0.00000000000000266454},{38.1119,-0.00000000000000266454},{38.1119,0},{38.1119,0}}));
-      connect(sumofsineshz1.y,precision2ndordernm1.r) annotation(Line(points = {{-39,0},{-11.5385,0},{-11.5385,-0.699301},{-11.5385,-0.699301}}));
-      connect(sumofsineshz2.y,precision2ndordernm1.w) annotation(Line(points = {{0.000000000000000673533,39},{0.000000000000000673533,12.9371},{-0.699301,12.9371},{-0.699301,12.9371}}));
+      connect(controlledelement1.y,manualcontroller1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));
+      connect(manualcontroller1.u,controlledelement1.u) annotation(Line(points = {{11,-0.00000000000000266454},{38.1119,-0.00000000000000266454},{38.1119,0},{38.1119,0}}));
+      connect(referencesignal1.y,manualcontroller1.r) annotation(Line(points = {{-39,0},{-11.5385,0},{-11.5385,-0.699301},{-11.5385,-0.699301}}));
+      connect(disturbanceinput1.y,manualcontroller1.w) annotation(Line(points = {{0.000000000000000673533,39},{0.000000000000000673533,12.9371},{-0.699301,12.9371},{-0.699301,12.9371}}));
       annotation(Icon(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2})), Diagram(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2})));
-    end SampleTaskCompensatory;
-    model SampleTaskPursuitPreview "Sample tracking task for user experiment that includes pursuit information and target preview"
+    end ExampleCompensatory;
+    model ExamplePursuit1 "Sample pursuit tracking task with background information"
       extends Modelica.Blocks.Icons.Block;
       extends ManualTracking.Icons.TrackingTask;
-      ManualTracking.ManualControllers.Precision2ndOrderNM precision2ndordernm1(tau = 0.25) annotation(Placement(visible = true, transformation(origin = {-0.00000000000000210942,-0.00000000000000266454}, extent = {{-10,-10},{10,10}}, rotation = 0)));
-      ManualTracking.ControlledElements.VelocityResponse velocityresponse1(K = 1) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
-      ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesHz sumofsineshz1(amps = {10.493,0.835,0.735,0.581,0.474,0.366,0.266,0.167,0.071}, freqs = {0.01,0.03,0.05,0.11,0.19,0.33,0.55,0.91,1.49}, phis = {0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
-      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz sumofsineshz2 annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
+      ManualTracking.ManualControllers.DescriptiveModel manualcontroller1(K1 = 3.0, K2 = 0.5, K3 = -0.33, K4 = 1.0) annotation(Placement(visible = true, transformation(origin = {-0.00000000000000210942,-0.00000000000000266454}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ControlledElements.VelocityResponse controlledelement1(K = 1) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesHz referencesignal1(amps = {10.493,0.835,0.735,0.581,0.474,0.366,0.266,0.167,0.071}, freqs = {0.01,0.03,0.05,0.11,0.19,0.33,0.55,0.91,1.49}, phis = {0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1 annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
+      ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 60, backgroundVisible = 1, previewTime = 0) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+    equation
+      connect(controlledelement1.y,manualcontroller1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));
+      connect(manualcontroller1.u,controlledelement1.u) annotation(Line(points = {{11,-0.00000000000000266454},{38.1119,-0.00000000000000266454},{38.1119,0},{38.1119,0}}));
+      connect(referencesignal1.y,manualcontroller1.r) annotation(Line(points = {{-39,0},{-11.5385,0},{-11.5385,-0.699301},{-11.5385,-0.699301}}));
+      connect(disturbanceinput1.y,manualcontroller1.w) annotation(Line(points = {{0.000000000000000673533,39},{0.000000000000000673533,12.9371},{-0.699301,12.9371},{-0.699301,12.9371}}));
+      annotation(Icon(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2})), Diagram(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2})));
+    end ExamplePursuit1;
+    model ExamplePursuit2 "Sample pursuit tracking task with target peview"
+      extends Modelica.Blocks.Icons.Block;
+      extends ManualTracking.Icons.TrackingTask;
+      ManualTracking.ManualControllers.StructuralFor1stOrder manualcontroller1(K1 = 5.0, K2 = 0.01, K3 = 3.33) annotation(Placement(visible = true, transformation(origin = {-0.00000000000000210942,-0.00000000000000266454}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ControlledElements.VelocityResponse controlledelement1(K = 1) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesHz referencesignal1(amps = {10.493,0.835,0.735,0.581,0.474,0.366,0.266,0.167,0.071}, freqs = {0.01,0.03,0.05,0.11,0.19,0.33,0.55,0.91,1.49}, phis = {0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1 annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
+      ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 60, backgroundVisible = 1, previewTime = 0) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+    equation
+      connect(controlledelement1.y,manualcontroller1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));
+      connect(manualcontroller1.u,controlledelement1.u) annotation(Line(points = {{11,-0.00000000000000266454},{38.1119,-0.00000000000000266454},{38.1119,0},{38.1119,0}}));
+      connect(referencesignal1.y,manualcontroller1.r) annotation(Line(points = {{-39,0},{-11.5385,0},{-11.5385,-0.699301},{-11.5385,-0.699301}}));
+      connect(disturbanceinput1.y,manualcontroller1.w) annotation(Line(points = {{0.000000000000000673533,39},{0.000000000000000673533,12.9371},{-0.699301,12.9371},{-0.699301,12.9371}}));
+      annotation(Icon(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2})), Diagram(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2})));
+    end ExamplePursuit2;
+    model ExamplePursuit3 "Sample pursuit tracking task with background information and target preview"
+      extends Modelica.Blocks.Icons.Block;
+      extends ManualTracking.Icons.TrackingTask;
+      ManualTracking.ManualControllers.FeedforwardModel manualcontroller1(K1 = 2.33, K2 = 0.67) annotation(Placement(visible = true, transformation(origin = {-0.00000000000000210942,-0.00000000000000266454}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ControlledElements.VelocityResponse controlledelement1(K = 1) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesHz referencesignal1(amps = {10.493,0.835,0.735,0.581,0.474,0.366,0.266,0.167,0.071}, freqs = {0.01,0.03,0.05,0.11,0.19,0.33,0.55,0.91,1.49}, phis = {0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
+      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1 annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
       ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 60, backgroundVisible = 1, previewTime = 1.5) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
     equation
-      connect(velocityresponse1.y,precision2ndordernm1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));
-      connect(precision2ndordernm1.u,velocityresponse1.u) annotation(Line(points = {{11,-0.00000000000000266454},{38.1119,-0.00000000000000266454},{38.1119,0},{38.1119,0}}));
-      connect(sumofsineshz1.y,precision2ndordernm1.r) annotation(Line(points = {{-39,0},{-11.5385,0},{-11.5385,-0.699301},{-11.5385,-0.699301}}));
-      connect(sumofsineshz2.y,precision2ndordernm1.w) annotation(Line(points = {{0.000000000000000673533,39},{0.000000000000000673533,12.9371},{-0.699301,12.9371},{-0.699301,12.9371}}));
+      connect(controlledelement1.y,manualcontroller1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));
+      connect(manualcontroller1.u,controlledelement1.u) annotation(Line(points = {{11,-0.00000000000000266454},{38.1119,-0.00000000000000266454},{38.1119,0},{38.1119,0}}));
+      connect(referencesignal1.y,manualcontroller1.r) annotation(Line(points = {{-39,0},{-11.5385,0},{-11.5385,-0.699301},{-11.5385,-0.699301}}));
+      connect(disturbanceinput1.y,manualcontroller1.w) annotation(Line(points = {{0.000000000000000673533,39},{0.000000000000000673533,12.9371},{-0.699301,12.9371},{-0.699301,12.9371}}));
       annotation(Icon(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2})), Diagram(coordinateSystem(extent = {{-100,-100},{100,100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2,2})));
-    end SampleTaskPursuitPreview;
+    end ExamplePursuit3;
     model NieuwenhuizenEtAl2008 "Tracking task from Nieuwenhuizen et al. (2008) with reference and disturbance forcing functions"
       extends Modelica.Blocks.Icons.Block;
       extends ManualTracking.Icons.TrackingTask;
@@ -1594,12 +1624,6 @@ in Shirley and Young (1968), and with very low damping in Potter and Singhose
         end for;
         connect(sineSummer.y,y);
       end SumOfSinesRadPerSec;
-      block Step
-        extends Modelica.Blocks.Interfaces.SO;
-        Modelica.Blocks.Sources.Step step1(height = 1, startTime = 1);
-      equation
-        connect(step1.y,y);
-      end Step;
     end ReferenceSignals;
     package DisturbanceInputs
       extends Modelica.Icons.Package;
@@ -1674,10 +1698,10 @@ functions will not be able to parse the text of the tracking task.
     block FeedForward "Inverted plant dynamics model used in FeedforwardModel manual controller"
       extends Modelica.Blocks.Interfaces.SISO;
       parameter Real k = 1;
-      Modelica.Blocks.Math.Gain controlledElement(k = k);
+      Modelica.Blocks.Continuous.Derivative inversemodel1(k = k);
     equation
-      connect(controlledElement.u,u);
-      connect(controlledElement.y,y);
+      connect(inversemodel1.u,u);
+      connect(inversemodel1.y,y);
     end FeedForward;
     block ComplexZero "Proportional and derivative control action on a signal"
       extends Modelica.Blocks.Interfaces.SISO;

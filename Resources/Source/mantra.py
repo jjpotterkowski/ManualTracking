@@ -18,6 +18,7 @@ saveFormat = Options.saveFormat
 printVerbose = Options.printVerbose
 odeSolver = Options.odeSolver
 optMethod = Options.optMethod
+tuneAnyParam = Options.tuneAnyParam
 frameRateSimulation = Options.frameRateSimulation
 frameRateExperiment = Options.frameRateExperiment
 
@@ -155,7 +156,7 @@ def tune_controller_simulation(plotResults=False, saveResults=False):
     functionName = 'TuneControllerSimulation'
 
     # Allow user to select parameters to tune
-    tools.print_controller_parameters(controllerParams, controllerStr)
+    tools.print_controller_parameters(controllerParams, controllerStr, tuneAnyParam)
     params2tune = tools.select_tuned_parameters(controllerParams) # returns list of param names to tune
 
     # Assemble arguments and call function
@@ -176,11 +177,11 @@ def tune_controller_simulation(plotResults=False, saveResults=False):
     fmi.stop_openmodelica_server()
 
 
-def tune_controller_experiment(plotResults=False, saveResults=False):
+def tune_controller_experiment(useSaved=False, plotResults=False, saveResults=False):
     functionName = 'TuneControllerExperiment'
 
     # Allow user to select parameters to tune
-    tools.print_controller_parameters(controllerParams, controllerStr)
+    tools.print_controller_parameters(controllerParams, controllerStr, tuneAnyParam)
     params2tune = tools.select_tuned_parameters(controllerParams) # returns list of param names to tune
 
     # Run experiment if not using previously saved data

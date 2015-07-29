@@ -279,18 +279,20 @@ def overwrite_dict_values(baseDict, overwriteDict, overwriteKeys=False, overwrit
     return baseDict
 
 
-def print_controller_parameters(paramDict, paramStr):
-    print "Controller parameters (excluding time delays):" 
+def print_controller_parameters(paramDict, paramStr, listAllParams=False):
+    print "Controller parameters (except time delays):" 
     keyNum = 1    
     for oneKey in paramDict.keys():
-        if oneKey[0:3] != 'tau':
+        if listAllParams:
+            print '  ' + str(keyNum) + '. ' + oneKey + ' -- ' + paramStr[oneKey]
+        elif oneKey[0:3] != 'tau' and oneKey[0:5] != 'omega' and oneKey[0:4] != 'zeta':
             print '  ' + str(keyNum) + '. ' + oneKey + ' -- ' + paramStr[oneKey]
         keyNum = keyNum + 1
     print ""
 
 
 def select_tuned_parameters(paramDict):
-    paramNums_raw = raw_input("Please enter a comma-separated numbers list\nspecifying parameters to tune: ")
+    paramNums_raw = raw_input("Please enter a comma-separated number\nlist specifying parameters to tune: ")
     print ""
 
     paramNums = str(paramNums_raw).replace(' ', '').split(',') # remove white space and split into individual numbers

@@ -1,13 +1,14 @@
 #=======================================================================================
 # Global Options -- general options for Python function inside the Resources/ directory
 #=======================================================================================
-taskModel = 'ManualTracking.TrackingTasks.SampleTaskPursuitPreview' # name of class inside TrackingTask package
+taskModel = 'ManualTracking.TrackingTasks.ExamplePursuit1' # name of tracking task class to use in Python functions
 saveFormat = "timeStamp + '-' + taskName + '-' + functionName" # format for data file names saved to Resources/Data/
 printVerbose = True # print all log and results messages
-odeSolver = 'ExplicitEuler' # 'Dopri5' or 'ExplicitEuler'
+odeSolver = 'ExplicitEuler' # 'ExplicitEuler' or 'Dopri5'
 optMethod = 'Nelder-Mead' # 'Nelder-Mead' or 'Powell', used in controller tuning functions
+tuneAnyParam = False # Allows user to select any controller parameter for tuning (time delays, neuromuscular natural frequency and damping are normally excluded)
 frameRateSimulation = 50 # frame rate for tracking simulations, in frames per second
-frameRateExperiment = 24 # frame rate for experimental tracking task, in frames per second
+frameRateExperiment = 25 # frame rate for experimental tracking task, in frames per second ... between 24 and 30 is recommended
 
 #============================================================
 # Local Options -- arguments for individual Python functions
@@ -26,5 +27,6 @@ TuneControllerSimulation = {
     'saveResults': False}
 
 TuneControllerExperiment = {
+    'useSaved': True,
     'plotResults': True,
     'saveResults': False}
