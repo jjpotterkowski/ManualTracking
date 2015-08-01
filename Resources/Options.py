@@ -1,7 +1,7 @@
 #=======================================================================================
 # Global Options -- general options for Python function inside the Resources/ directory
 #=======================================================================================
-taskModel = 'ManualTracking.TrackingTasks.ExamplePursuit1' # name of tracking task class to use in Python functions
+taskModel = 'ManualTracking.TrackingTasks.ExampleCompensatory' # name of tracking task class to use in Python functions
 saveFormat = "timeStamp + '-' + taskName + '-' + functionName" # format for data file names saved to Resources/Data/
 printVerbose = True # print all log and results messages
 odeSolver = 'ExplicitEuler' # 'ExplicitEuler' or 'Dopri5'

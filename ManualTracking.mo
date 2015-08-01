@@ -70,22 +70,22 @@ implemented in the Python programming language, version 2.7.
 An overview of the software is shown above.  In the <i>Resources/</i> 
 directory, there are 5 .py files.  Four of these are function scripts that can
 be run from a terminal or Python IDE, and the fifth file is <i>Options.py</i>,
-where options are set by the user.  The functions donot use input arguments,
+where options are set by the user.  The functions do not use input arguments,
 and instead look at <i>Options.py</i>.  Variables in this file include: 
-<b>taskModel</b>, the tracking task model to run; <b>jmodelicaPath</b> 
-the JModelica.org install path; <b>saveFormat</b>, the format with which to 
-save backup data files; and <b>printVerbose</b>, whether or not to print all
-runtime messages to the console.
+<b>taskModel</b>, the tracking task model to run; <b>saveFormat</b>, the format
+with which to save backup data files; and <b>printVerbose</b>, whether or not 
+to print all runtime messages to the console. The user may also experiment with
+different framerates and optimization/simulation methods.
 </p>
 
 <p>
 <b>Options.py</b> also contains Boolean input arguments for each of the four 
 functions: <b>useSaved</b> makes the functions use most recent saved data 
 (in <i>Resources/Temp/</i> directory) instead of re-running an experiment; 
-<b>plotResults</b> generates a figure with the resulting curves; 
-<b>printResults</b> prints a summary of the results to the console; and 
+<b>plotResults</b> generates a figure with the resulting trajectories; and 
 <b>saveResults</b> saves a backup results file in the <i>Resources/Data/</i>
-directory.
+directory. The results file contains values for the reference state, measured 
+state, disturbance input, and control input at each sample time.
 </p>
 
 <p>
@@ -93,7 +93,10 @@ Each of the four main functions call <i>mantra.py</i>, which reads the
 <i>ManualTracking.mo</i> file for details of the tracking task, and then calls 
 functions defined in <i>fmi.py</i>, <i>game.py</i>, and <i>tools.py</i>.
 These functions use standard Python modules, as well as OMPython, pyfmi, 
-pyjmi, Pygame, and matplotlib.  
+Pygame, and matplotlib. Note that OMPython requires an installation of 
+OpenModelica. Additionally, pyfmi has many dependencies that must be installed 
+first, and it may be more convenient to install JModelica.org instead of 
+installing them individually.
 </p>
 </html>"));
     end PythonFunctions;
@@ -766,9 +769,7 @@ Comparing multimodal pilot pitch control behavior between simulated and real fli
 <dd>James Jackson Potter</dd>
 <dd><a href=\"http://www.vttresearch.com\">VTT Technical Research Centre 
 of Finland</a></dd>
-<dd>Tekniikantie 4 A</dd>
-<dd>Otaniemi, Espoo</dd>
-<dd>Finland</dd>
+<dd>Vuorimiehentie 3, Espoo, Finland</dd>
 <dd>email: <a href=\"mailto:jjpotterkowski@gmail.com\">
 jjpotterkowski@gmail.com</a></dd></dl>
 
@@ -798,7 +799,7 @@ and Mathematics</a> (ERCIM)</li></ul>
       ManualTracking.ManualControllers.Precision2ndOrderNM manualcontroller1(K = 12, T1 = 10, T2 = 60) annotation(Placement(visible = true, transformation(origin = {-0.00000000000000210942,-0.00000000000000266454}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ControlledElements.VelocityResponse controlledelement1(K = 1) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesHz referencesignal1(amps = {10.493,0.835,0.735,0.581,0.474,0.366,0.266,0.167,0.071}, freqs = {0.01,0.03,0.05,0.11,0.19,0.33,0.55,0.91,1.49}, phis = {0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
-      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1 annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
+      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1(amps = {0}, freqs = {0}, phis = {0}) annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
       ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 60, backgroundVisible = 0, previewTime = 0) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
     equation
       connect(controlledelement1.y,manualcontroller1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));
@@ -813,7 +814,7 @@ and Mathematics</a> (ERCIM)</li></ul>
       ManualTracking.ManualControllers.DescriptiveModel manualcontroller1(K1 = 3.0, K2 = 0.5, K3 = -0.33, K4 = 1.0) annotation(Placement(visible = true, transformation(origin = {-0.00000000000000210942,-0.00000000000000266454}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ControlledElements.VelocityResponse controlledelement1(K = 1) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesHz referencesignal1(amps = {10.493,0.835,0.735,0.581,0.474,0.366,0.266,0.167,0.071}, freqs = {0.01,0.03,0.05,0.11,0.19,0.33,0.55,0.91,1.49}, phis = {0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
-      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1 annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
+      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1(amps = {0}, freqs = {0}, phis = {0}) annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
       ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 60, backgroundVisible = 1, previewTime = 0) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
     equation
       connect(controlledelement1.y,manualcontroller1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));
@@ -828,7 +829,7 @@ and Mathematics</a> (ERCIM)</li></ul>
       ManualTracking.ManualControllers.StructuralFor1stOrder manualcontroller1(K1 = 5.0, K2 = 0.01, K3 = 3.33) annotation(Placement(visible = true, transformation(origin = {-0.00000000000000210942,-0.00000000000000266454}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ControlledElements.VelocityResponse controlledelement1(K = 1) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesHz referencesignal1(amps = {10.493,0.835,0.735,0.581,0.474,0.366,0.266,0.167,0.071}, freqs = {0.01,0.03,0.05,0.11,0.19,0.33,0.55,0.91,1.49}, phis = {0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
-      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1 annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
+      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1(amps = {0}, freqs = {0}, phis = {0}) annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
       ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 60, backgroundVisible = 1, previewTime = 0) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
     equation
       connect(controlledelement1.y,manualcontroller1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));
@@ -843,7 +844,7 @@ and Mathematics</a> (ERCIM)</li></ul>
       ManualTracking.ManualControllers.FeedforwardModel manualcontroller1(K1 = 2.33, K2 = 0.67) annotation(Placement(visible = true, transformation(origin = {-0.00000000000000210942,-0.00000000000000266454}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ControlledElements.VelocityResponse controlledelement1(K = 1) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesHz referencesignal1(amps = {10.493,0.835,0.735,0.581,0.474,0.366,0.266,0.167,0.071}, freqs = {0.01,0.03,0.05,0.11,0.19,0.33,0.55,0.91,1.49}, phis = {0,0,0,0,0,0,0,0,0}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
-      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1 annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
+      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesHz disturbanceinput1(amps = {0}, freqs = {0}, phis = {0}) annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
       ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 60, backgroundVisible = 1, previewTime = 1.5) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
     equation
       connect(controlledelement1.y,manualcontroller1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));
@@ -873,7 +874,7 @@ and Mathematics</a> (ERCIM)</li></ul>
       ManualTracking.ManualControllers.Precision2ndOrderNM precision2ndordernm1(K = 8, T1 = 3, T2 = 6) annotation(Placement(visible = true, transformation(origin = {-0.00000000000000210942,-0.00000000000000266454}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ControlledElements.VelocityResponse velocityresponse1(K = 0.3396) annotation(Placement(visible = true, transformation(origin = {50,0.000000000000000444089}, extent = {{-10,-10},{10,10}}, rotation = 0)));
       ManualTracking.ForcingFunctions.ReferenceSignals.SumOfSinesRadPerSec sumofsinesradpersec1(amps = {0.12,0.256,0.395,0.536,0.688,0.839,1.057,1.198,16.92}, freqs = {9.362,5.718,3.456,2.074,1.194,0.691,0.314,0.189,0.031}, phis = {1.928,0.664,3.719,2.455,0.898,0.341,0.336,4.593,3.367}) annotation(Placement(visible = true, transformation(origin = {-50,0}, extent = {{-10,-10},{10,10}}, rotation = 0)));
-      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesRadPerSec sumofsinesradpersec2 annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
+      ManualTracking.ForcingFunctions.DisturbanceInputs.SumOfSinesRadPerSec sumofsinesradpersec2(amps = {0}, freqs = {0}, phis = {0}) annotation(Placement(visible = true, transformation(origin = {0,50}, extent = {{-10,-10},{10,10}}, rotation = -90)));
       ManualTracking.TrackingTasks.TaskSettings tasksettings1(taskDuration = 100, backgroundVisible = 1) annotation(Placement(visible = true, transformation(origin = {-70,70}, extent = {{-10,-10},{10,10}}, rotation = 0)));
     equation
       connect(velocityresponse1.y,precision2ndordernm1.y) annotation(Line(points = {{61,0.000000000000000444089},{80.0699,0.000000000000000444089},{80.0699,-39.8601},{0,-39.8601},{0,-13.986},{0,-13.986}}));

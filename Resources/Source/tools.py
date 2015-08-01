@@ -279,32 +279,27 @@ def overwrite_dict_values(baseDict, overwriteDict, overwriteKeys=False, overwrit
     return baseDict
 
 
-def print_controller_parameters(paramDict, paramStr, listAllParams=False):
-    print "Controller parameters (except time delays):" 
+def select_tuned_parameters(paramDict, paramStr, listAllParams):
+    paramList = {}
+        
+    # Print parameters and let user choose parameter numbers
+    print "Tunable controller parameters:" 
     keyNum = 1    
     for oneKey in paramDict.keys():
-        if listAllParams:
+        if listAllParams or (oneKey[0:3] != 'tau' and oneKey[0:5] != 'omega' and oneKey[0:4] != 'zeta'):
             print '  ' + str(keyNum) + '. ' + oneKey + ' -- ' + paramStr[oneKey]
-        elif oneKey[0:3] != 'tau' and oneKey[0:5] != 'omega' and oneKey[0:4] != 'zeta':
-            print '  ' + str(keyNum) + '. ' + oneKey + ' -- ' + paramStr[oneKey]
-        keyNum = keyNum + 1
-    print ""
-
-
-def select_tuned_parameters(paramDict):
+            paramList[keyNum] = oneKey
+            keyNum = keyNum + 1
+    print ""    
     paramNums_raw = raw_input("Please enter a comma-separated number\nlist specifying parameters to tune: ")
     print ""
 
+    # Determine parameters based on chosen numbers
     paramNums = str(paramNums_raw).replace(' ', '').split(',') # remove white space and split into individual numbers
-    paramNums = [int(p) for p in paramNums] # parameter numbers in list form
+    paramNums = [int(p) for p in paramNums] # parameter numbers in list form, ensuring they are integers
     params2tune = []
-    keyNum = 1
-
-    for oneKey in paramDict.keys():
-        if keyNum in paramNums:
-            assert oneKey[0:3] != 'tau', "Number not found on list of parameters"
-            params2tune.append(oneKey)
-        keyNum = keyNum + 1
+    for oneNum in paramNums:
+        params2tune.append(paramList[oneNum])
 
     return params2tune
 

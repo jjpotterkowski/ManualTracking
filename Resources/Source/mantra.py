@@ -156,8 +156,7 @@ def tune_controller_simulation(plotResults=False, saveResults=False):
     functionName = 'TuneControllerSimulation'
 
     # Allow user to select parameters to tune
-    tools.print_controller_parameters(controllerParams, controllerStr, tuneAnyParam)
-    params2tune = tools.select_tuned_parameters(controllerParams) # returns list of param names to tune
+    params2tune = tools.select_tuned_parameters(controllerParams, controllerStr, tuneAnyParam) # returns list of param names to tune
 
     # Assemble arguments and call function
     taskInfo = (controllerName, taskModel, os.environ['MANTRA_MOFILE']) 
@@ -181,8 +180,7 @@ def tune_controller_experiment(useSaved=False, plotResults=False, saveResults=Fa
     functionName = 'TuneControllerExperiment'
 
     # Allow user to select parameters to tune
-    tools.print_controller_parameters(controllerParams, controllerStr, tuneAnyParam)
-    params2tune = tools.select_tuned_parameters(controllerParams) # returns list of param names to tune
+    params2tune = tools.select_tuned_parameters(controllerParams, controllerStr, tuneAnyParam) # returns list of param names to tune
 
     # Run experiment if not using previously saved data
     if os.path.isfile(os.path.join(os.environ['MANTRA_TEMP'], taskName+'_exp.csv')):
